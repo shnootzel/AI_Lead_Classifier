@@ -1,0 +1,109 @@
+{
+  "name": "AI_Lead_Classifier",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "AI_Leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fea5d2c9-aac6-4ffb-95ba-b2a878122b0d",
+      "name": "Webhook",
+      "webhookId": "b3a1df60-f1e2-4724-9f3b-007855ae026f"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are a lead qualification assistant.\n\nAnalyze the following real estate lead and return:\n\n1. Lead temperature: HOT, WARM, or COLD\n2. Property type\n3. Budget\n4. Location\n5. Short reason for the classification\n\nLead message:\n{{ $json.body.message }}\n\nReturn the answer in a simple structured format."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "3422588e-dfe1-42d9-bb71-0d4a28e74c8d",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Lead Classified",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        592,
+        0
+      ],
+      "id": "2697cf29-d3f8-499f-a983-19c872b90e65",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "46d2ad36-a22d-4854-9bde-2f8ab4f3ed28",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bfb493da85019fd34ce0ab9b9a26cfe1f6c9899fac0fe85aa18d44b48ecc50d2"
+  },
+  "nodeGroups": [],
+  "id": "uTEg0MNViCkyQoDP",
+  "tags": []
+}
