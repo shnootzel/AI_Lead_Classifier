@@ -29,7 +29,7 @@
         "responses": {
           "values": [
             {
-              "content": "=You are a lead qualification assistant.\n\nAnalyze the following real estate lead and return:\n\n1. Lead temperature: HOT, WARM, or COLD\n2. Property type\n3. Budget\n4. Location\n5. Short reason for the classification\n\nLead message:\n{{ $json.body.message }}\n\nReturn the answer in a simple structured format."
+              "content": "=You are a lead qualification assistant.\n\nAnalyze the following real estate lead and return:\n\n1. Lead temperature: HOT, WARM, or COLD\n2. Property type\n3. Budget\n4. Location\n5. Short reason for the classification\n\nLead message:\n{{ $json.body.message }}\n\nReturn the answer in a simple structured format.\n\nDo not use markdown.\nDo not use ```json.\nDo not include any explanation.\n\nUse exactly this structure:\n\n{\n  \"lead_temperature\": \"HOT\" or \"WARM\" or \"COLD\",\n  \"property_type\": \"\",\n  \"budget\": \"\",\n  \"location\": \"\",\n  \"reason\": \"\"\n}"
             }
           ]
         },
@@ -55,17 +55,30 @@
     {
       "parameters": {
         "respondWith": "text",
-        "responseBody": "Lead Classified",
+        "responseBody": "={{ $json }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        592,
+        704,
         0
       ],
       "id": "2697cf29-d3f8-499f-a983-19c872b90e65",
       "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.output[0].content[0].text;\n\nconst cleanText = text\n  .replace(/```json/g, '')\n  .replace(/```/g, '')\n  .trim();\n\nreturn [\n  {\n    json: JSON.parse(cleanText)\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        0
+      ],
+      "id": "074f992e-678f-4805-a99b-2c941703e52c",
+      "name": "Code in JavaScript"
     }
   ],
   "pinData": {},
@@ -85,6 +98,17 @@
       "main": [
         [
           {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
             "node": "Respond to Webhook",
             "type": "main",
             "index": 0
@@ -98,7 +122,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "46d2ad36-a22d-4854-9bde-2f8ab4f3ed28",
+  "versionId": "21b0ef6c-d99c-42ca-b285-8680179326f1",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bfb493da85019fd34ce0ab9b9a26cfe1f6c9899fac0fe85aa18d44b48ecc50d2"
